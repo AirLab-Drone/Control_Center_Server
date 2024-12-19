@@ -1,0 +1,57 @@
+/* 基本樣式 */
+body {
+    display: flex;
+    margin: 0;
+    font-family: Arial, sans-serif;
+    height: 100vh; /* 滿屏高度 */
+}
+
+/* 側邊欄樣式 */
+.sidebar {
+    width: 300px; /* 固定側邊欄寬度 */
+    background-color: #f0f0f0;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start; /* 從上到下排列 */
+    align-items: center;
+    padding: 10px 0;
+    border-right: 1px solid #ccc;
+    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1); /* 陰影效果 */
+    flex-shrink: 0; /* 防止側邊欄縮小 */
+}
+
+.sidebar .logo {
+    width: 80%; /* Logo 寬度 */
+    margin-bottom: 20px; /* 與按鈕的間距 */
+}
+.sidebar .logo img {
+    width: 100%; /* 確保圖片自適應 */
+    height: auto;
+}
+
+.sidebar button {
+    width: 90%; /* 按鈕寬度 */
+    margin: 10px auto;
+    padding: 15px;
+    font-size: 16px;
+    background-color: #ddd;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    text-align: center;
+    transition: background-color 0.3s ease;
+}
+.sidebar button:hover {
+    background-color: #bbb;
+}
+
+/* 內容區域 */
+.content {
+    flex-grow: 1;
+    padding: 20px;
+    background-color: #fff;
+    overflow-y: auto; /* 如果內容過多則可以滾動 */
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* 中心對齊內容 */
+}

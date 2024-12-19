@@ -1,0 +1,110 @@
+
+/* 標題樣式 */
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    width: 100%;
+    max-width: 1200px; /* 限制內容最大寬度 */
+}
+
+.header h2 {
+    margin: 0;
+    font-size: 24px;
+    color: #333;
+}
+
+.update-button {
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background-color 0.3s ease;
+}
+
+.update-button:hover {
+    background-color: #0056b3;
+}
+
+/* 圖表容器樣式 */
+.chart-container {
+    margin-bottom: 20px;
+    background: #fff;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 15px;
+    width: 100%; /* 充滿內容區域寬度 */
+    max-width: 1200px; /* 限制最大寬度 */
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* 折疊容器 */
+.accordion {
+    margin-top: 20px;
+    width: 100%;
+    max-width: 1200px; /* 限制內容最大寬度 */
+}
+
+.accordion-item {
+    margin-bottom: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    overflow: hidden;
+    transition: box-shadow 0.3s ease;
+    width: 100%;
+    box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.accordion-item:hover {
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.2);
+}
+
+.accordion-header {
+    padding: 15px;
+    background-color: #f9f9f9;
+    font-weight: bold;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+    font-size: 16px;
+    border-bottom: 1px solid #ddd;
+}
+
+.accordion-content {
+    max-height: 0;
+    overflow: hidden;
+    padding: 0 15px;
+    background-color: #fff;
+    border-top: 1px solid #ddd;
+    transition: max-height 0.3s ease, padding 0.3s ease;
+    display: flex;
+    flex-wrap: wrap; /* 支持多列排列 */
+    gap: 10px; /* 增加項目間距 */
+}
+
+.accordion-item:hover .accordion-content {
+    max-height: 300px; /* 調整內容最大高度 */
+    padding: 15px;
+}
+
+/* 折疊內容樣式 */
+.accordion-content p {
+    margin: 5px 0;
+    font-size: 14px;
+    color: #555;
+    flex: 1 1 calc(33.333% - 10px); /* 三列布局 */
+    min-width: 200px; /* 最小寬度 */
+    line-height: 1.5;
+}
+
+.error-code {
+    grid-column: span 1; /* 在網格中占用兩列 */
+    font-weight: bold;
+    color: #d9534f; /* 紅色 */
+    word-wrap: break-word; /* 自動換行 */
+}

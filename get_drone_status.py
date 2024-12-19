@@ -12,6 +12,15 @@ import json
 import requests
 import time
 
+from datetime import datetime
+
+from datetime import datetime
+import pytz
+
+# 設定台灣時間
+
+
+
 class MAVLinkHandler:
 
     def __init__(self, port='/dev/ttyUSB0', baud=57600):
@@ -24,7 +33,9 @@ class MAVLinkHandler:
         if not self._wait_for_heartbeat():
             raise ConnectionError("無法與飛控建立連接")
         
+        
         self.drone_status_dict = {  
+            "upload_time": None,
             "sensor_health": 0,
             "battery_voltage": 0,           # uint16_t      mV      invalid:UINT16_MAX
             "battery_current": 0,           # int16_t	    cA	    invalid:-1
@@ -72,6 +83,7 @@ class MAVLinkHandler:
         獲取飛控的狀態信息。
         :return: 包含飛控狀態信息原始資料的字典
         """
+        # self.drone_status_dict["upload_time"] = datetime.now(pytz.timezone("Asia/Taipei")).isoformat()
         try:
             sys_status = self._get_mavlink_message('SYS_STATUS')
             if sys_status:
