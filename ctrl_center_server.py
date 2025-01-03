@@ -26,6 +26,28 @@ image_paths = {
 }
 
 
+class TempManager:
+    def __init__(self):
+        self.ipt430m_temp = None
+        self.ds4025ft_temp = None
+
+    def set_temp(self, source, temp):
+        if source == "ipt430m":
+            self.ipt430m_temp = temp
+        elif source == "ds4025ft":
+            self.ds4025ft_temp = temp
+
+    def get_temp(self, source):
+        if source == "ipt430m":
+            return self.ipt430m_temp
+        elif source == "ds4025ft":
+            return self.ds4025ft_temp
+
+
+temp_manager = TempManager()
+
+
+
 
 # ------------------------------- upload status ------------------------------ #
 
@@ -118,7 +140,7 @@ def upload_up_squared_status():
 
         try:
             database.session.add(new_status)
-            database.session.commit()
+            # ------------------------- database.session.commit() ------------------------ #
             return jsonify({"message": "Status added successfully"}), 200
         except Exception as e:
             print(f"資料庫錯誤: {e}")
@@ -129,7 +151,7 @@ def upload_up_squared_status():
 
 
 
-
+# todo: 不要每次都寫進資料庫
 @app.route("/upload/ThermalCameraStatus", methods=["POST"])
 def upload_thermal_camera_status():
     if request.method == "POST":
@@ -181,6 +203,53 @@ def upload_thermal_camera_status():
 
 
 
+
+def save_thermal_image(source, thermal_img):
+    try:
+        if thermal_img is not None:
+            decoded_img = base64.b64decode(thermal_img)
+            with open(image_paths[source], "wb") as f:
+                f.write(decoded_img)
+            return True, "Image uploaded successfully"
+        else:
+            return True, "No image data provided"
+    except Exception as e:
+        return False, f"Error decoding image: {e}"
+
+
+# 即時串流: 溫度, 影像
+@app.route("/upload/ThermalCameraStream/<source>", methods=["POST"])
+def upload_thermal_camera_stream(source):
+    if source not in image_paths:
+        return jsonify({"message": "Invalid or missing source"}), 400
+
+    if request.is_json:
+        data = request.get_json()
+        thermal_img = data.get("thermal_img")
+        temp_manager.set_temp(source, data.get("hot_spot_temp"))
+
+        success, message = save_thermal_image(source, thermal_img)
+
+        if success:
+            return jsonify({"message": message}), 200
+        else:
+            return jsonify({"message": message}), 400
+    else:
+        return jsonify({"message": "Invalid JSON data"}), 400
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 # ---------------------------- show in the browser --------------------------- #
 @app.route('/thermal_camera_status/<source>', methods=["GET"])
 def thermal_camera_status(source):
@@ -202,7 +271,7 @@ def thermal_camera_status(source):
         print(f"Error in thermal_camera_status: {e}")
         return jsonify({"status": "offline", "message": "Internal server error"}), 500
 
-# todo: 把影像跟溫度開一個路由 然後不要寫進資料庫
+
 
 
 
@@ -465,4 +534,4 @@ def get_statuses():
 if __name__ == "__main__":
     with app.app_context():
         database.create_all()  # 創建資料庫和表格
-    app.run(debug=True, host='0.0.0.0', port=5000)
+    app.run(debug=True, host='0.0.0.0', port=5000, threaded=True)

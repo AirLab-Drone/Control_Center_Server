@@ -37,16 +37,17 @@
     border: 1px solid #ddd;
     border-radius: 8px;
     padding: 15px;
-    width: 100%; /* 充滿內容區域寬度 */
-    max-width: 1200px; /* 限制最大寬度 */
+    width: 90%; /* 充滿內容區域寬度 */
+    max-width: 1200px; /*限制最大寬度*/
     box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
 }
 
 /* 折疊容器 */
 .accordion {
     margin-top: 20px;
-    width: 100%;
-    max-width: 1200px; /* 限制內容最大寬度 */
+    width: 90%;
+    max-width: 1200px; /*限制內容最大寬度 */
+
 }
 
 .accordion-item {
