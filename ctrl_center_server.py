@@ -7,6 +7,7 @@ from flask_sqlalchemy import SQLAlchemy
 import json
 import cv2
 import time
+import numpy as np
 from datetime import datetime
 from utils.database import database, Drone_Status, UpSquared_Status, Thermal_Camera_Status
 from utils.error_code import ERROR_CODE
@@ -20,16 +21,15 @@ app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
 database.init_app(app)
 
-image_paths = {
-    "ipt430m": "/tmp/ipt430m_thermal_image.jpg",
-    "ds4025ft": "/tmp/ds4025ft_thermal_image.jpg"
-}
+source_paths = ["ipt430m", "ds4025ft"]
 
 
-class TempManager:
+class Stream_Temp_Manager:
     def __init__(self):
         self.ipt430m_temp = None
+        self.ipt430m_img = None
         self.ds4025ft_temp = None
+        self.ds4025ft_img = None
 
     def set_temp(self, source, temp):
         if source == "ipt430m":
@@ -42,9 +42,28 @@ class TempManager:
             return self.ipt430m_temp
         elif source == "ds4025ft":
             return self.ds4025ft_temp
+        
+    def set_img(self, source, img_base64):
+        if img_base64 is not None:
+            decoded_img = base64.b64decode(img_base64)
+            np_arr = np.frombuffer(decoded_img, np.uint8)
+            img = cv2.imdecode(np_arr, cv2.IMREAD_COLOR)  # 解碼為 numpy 陣列
+        else:
+            img = None
+        
+        if source == "ipt430m":
+            self.ipt430m_img = img
+        elif source == "ds4025ft":
+            self.ds4025ft_img = img
+
+    def get_img(self, source):
+        if source == "ipt430m":
+            return self.ipt430m_img
+        elif source == "ds4025ft":
+            return self.ds4025ft_img
 
 
-temp_manager = TempManager()
+stream_temp_manager = Stream_Temp_Manager()
 
 
 
@@ -164,29 +183,12 @@ def upload_thermal_camera_status():
             thermal_img = data.get("thermal_img")
             error_code = json.dumps(data.get("error_code", []))
 
-            if thermal_img is not None:
-                is_thermal_img = True
-                try:
-                    decoded_img = base64.b64decode(thermal_img)
-                    if source not in image_paths:
-                        return jsonify({"message": "Invalid or missing source"}), 400
-                    else:
-                        with open(image_paths[source], "wb") as f:
-                            f.write(decoded_img)
-                except Exception as e:
-                    return jsonify({"message": f"Error decoding image: {e}"}), 400
-
-            else:
-                is_thermal_img = False
-                
-        else:
-            pass
 
         new_status = Thermal_Camera_Status(
             upload_time=upload_time,
             source = source,
             hot_spot_temp = hot_spot_temp,
-            thermal_img = is_thermal_img,
+            thermal_img = thermal_img,
             error_code = error_code,
         )
 
@@ -204,36 +206,22 @@ def upload_thermal_camera_status():
 
 
 
-def save_thermal_image(source, thermal_img):
-    try:
-        if thermal_img is not None:
-            decoded_img = base64.b64decode(thermal_img)
-            with open(image_paths[source], "wb") as f:
-                f.write(decoded_img)
-            return True, "Image uploaded successfully"
-        else:
-            return True, "No image data provided"
-    except Exception as e:
-        return False, f"Error decoding image: {e}"
-
-
 # 即時串流: 溫度, 影像
 @app.route("/upload/ThermalCameraStream/<source>", methods=["POST"])
 def upload_thermal_camera_stream(source):
-    if source not in image_paths:
+    if source not in source_paths:
         return jsonify({"message": "Invalid or missing source"}), 400
 
     if request.is_json:
         data = request.get_json()
-        thermal_img = data.get("thermal_img")
-        temp_manager.set_temp(source, data.get("hot_spot_temp"))
+        temp = data.get("hot_spot_temp")
+        img_base64 = data.get("thermal_img")
 
-        success, message = save_thermal_image(source, thermal_img)
-
-        if success:
-            return jsonify({"message": message}), 200
-        else:
-            return jsonify({"message": message}), 400
+        # 更新溫度和影像數據
+        stream_temp_manager.set_temp(source, temp)
+        stream_temp_manager.set_img(source, img_base64)
+        
+        return jsonify({"message": "Stream updated"}), 200
     else:
         return jsonify({"message": "Invalid JSON data"}), 400
 
@@ -245,32 +233,23 @@ def upload_thermal_camera_stream(source):
 
 
 
-
-
-
-
-
 # ---------------------------- show in the browser --------------------------- #
-@app.route('/thermal_camera_status/<source>', methods=["GET"])
+@app.route('/thermal_camera_stream/<source>', methods=["GET"])
 def thermal_camera_status(source):
     try:
-        # print(f"Received request for thermal camera status: {source}")
-        # 從資料庫獲取最新資料
-        latest_status = Thermal_Camera_Status.query.filter_by(source=source).order_by(
-            Thermal_Camera_Status.upload_time.desc()
-        ).first()
+        latest_img = stream_temp_manager.get_img(source)
+        latest_temp = stream_temp_manager.get_temp(source)
 
-        if not latest_status:
-            return jsonify({"status": "offline", "message": "No data available"}), 404
-
-        if latest_status.thermal_img:
-            return jsonify({"status": "online", "message": "Thermal camera is good"}), 200
+        if latest_img is not None and latest_temp is not None:
+            formatted_temp = round(float(latest_temp), 4)
+            return jsonify({"status": "online", "temperature": formatted_temp}), 200
         else:
-            return jsonify({"status": "offline", "message": "Thermal camera error"}), 200
-    except Exception as e:
-        print(f"Error in thermal_camera_status: {e}")
-        return jsonify({"status": "offline", "message": "Internal server error"}), 500
+            return jsonify({"status": "offline", "temperature": "None"}), 404
 
+
+    except Exception as e:
+        print(f"Error in thermal_camera_stream: {e}")
+        return jsonify({"status": "offline", "temperature": "Error"}), 500
 
 
 
@@ -278,41 +257,25 @@ def thermal_camera_status(source):
 def generate_frames(source):
     while True:
         try:
-            # 從共享路徑讀取圖片
-            frame = cv2.imread(image_paths[source])
+            frame = stream_temp_manager.get_img(source)  # 直接從記憶體讀取影像
             if frame is not None:
                 ret, buffer = cv2.imencode('.jpg', frame)
                 frame = buffer.tobytes()
+
                 # 生成 MJPEG 格式的串流
                 yield (b'--frame\r\n'
                        b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')
-            time.sleep(0.05)  # 控制幀率
+            time.sleep(0.1)  # 控制幀率，避免 CPU 過載
         except Exception as e:
             print(f"Error generating frame for {source}: {e}")
 
 @app.route('/video_feed/<source>')
 def video_feed(source):
-    if source not in image_paths:
+    if source not in source_paths:
         return "Invalid source", 400
     return Response(generate_frames(source), mimetype='multipart/x-mixed-replace; boundary=frame')
 
 
-@app.route('/latest_temperature/<source>', methods=["GET"])
-def latest_temperature(source):
-    try:
-        # print(f"Received request for latest temperature: {source}")
-        latest_status = Thermal_Camera_Status.query.filter_by(source=source).order_by(
-            Thermal_Camera_Status.upload_time.desc()
-        ).first()
-
-        if latest_status and latest_status.hot_spot_temp is not None:
-            formatted_temp = round(float(latest_status.hot_spot_temp), 4)
-            return jsonify({"temperature": formatted_temp}), 200
-        else:
-            return jsonify({"temperature": "None"}), 200
-    except Exception as e:
-        print(f"Error fetching temperature: {e}")
-        return jsonify({"message": "Internal server error"}), 500
     
 
 @app.route("/thermal_content")
