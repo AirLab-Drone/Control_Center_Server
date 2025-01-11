@@ -8,5 +8,6 @@
 
 ### requirement
 ```
-pip install Flask Flask-SQLAlchemy
+pip install Flask Flask-SQLAlchemy pytz python-dateutil opencv-python
+
 ```

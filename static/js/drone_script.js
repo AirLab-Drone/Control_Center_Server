@@ -103,7 +103,12 @@ function drawChart(data) {
         data: { labels, datasets },
         options: {
             responsive: true,
-            plugins: { legend: { display: true } },
+            plugins: { 
+                legend: { 
+                    display: true,
+                    position: 'right'
+                } 
+            },
             scales: {
                 x: { display: true, title: { display: true, text: 'Upload Time' } },
                 y: { display: true, title: { display: true, text: 'Values' } },
@@ -119,5 +124,6 @@ function createDataset(label, data, color) {
         borderColor: color,
         borderWidth: 2,
         fill: false,
+        hidden: true,
     };
 }

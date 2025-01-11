@@ -1,14 +1,16 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>System Dashboard</title>
-    <!-- 引入 CSS -->
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/index_style.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/thermal_style.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/drone_style.css') }}">
-
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>System Dashboard</title>
+        <!-- 引入 CSS -->
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/index_style.css') }}">
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/thermal_style.css') }}">
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/drone_style.css') }}">
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/ups_style.css') }}">
+        <!-- <link rel="stylesheet" href="https://cdn.datatables.net/1.11.3/css/jquery.dataTables.min.css"> -->
+        <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
 
 </head>
 <body>
@@ -37,6 +39,21 @@
     <script src="{{ url_for('static', filename='js/thermal_script.js') }}"></script>
     <script src="{{ url_for('static', filename='js/drone_script.js') }}"></script>
     <script src="{{ url_for('static', filename='js/error_code.js') }}"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    
+    <script src="https://cdn.datatables.net/1.11.3/js/jquery.dataTables.min.js"></script>
+    <script src="{{ url_for('static', filename='js/ups_script.js') }}"></script>
+    
+
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <!-- DataTables JS -->
+    <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+
+
+
     
 
 </body>

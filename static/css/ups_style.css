@@ -1,0 +1,20 @@
+.status.online {
+    color: green;
+    font-weight: bold;
+}
+.status.offline {
+    color: red;
+    font-weight: bold;
+}
+
+
+/* 
+table {
+    width: 100%;
+    margin-top: 20px;
+}
+
+canvas {
+    margin: 20px auto;
+    display: block;
+} */

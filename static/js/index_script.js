@@ -30,6 +30,27 @@ function loadData(type) {
                 console.error('Error loading drone content:', error);
                 contentArea.innerHTML = '<p>Failed to load Drone content.</p>';
             });
+    } else if (type === "UPS") {
+        stopThermalUpdates();
+
+        fetch('/ups_content')
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`HTTP error! Status: ${response.status}`);
+            }
+            return response.text();
+        })
+        .then(data => {
+            contentArea.innerHTML = data;
+            
+        })
+        .catch(error => {
+            console.error('Error loading drone content:', error);
+            contentArea.innerHTML = '<p>Failed to load UPS content.</p>';
+        });
+
+
+
     } else {
         stopThermalUpdates();
         contentArea.innerHTML = `<h2>${type} Data</h2><p>Coming soon...</p>`;

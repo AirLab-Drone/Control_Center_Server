@@ -1,0 +1,51 @@
+
+<h1>UP Squared Data</h1>
+
+<!-- 篩選條件 -->
+<form action="/ups_data" method="get">
+    <label for="status">Filter by Status:</label>
+    <select name="status" id="status">
+        <option value="">All</option>
+        <option value="online">Online</option>
+        <option value="offline">Offline</option>
+    </select>
+    <button type="submit">Filter</button>
+</form>
+
+<!-- 統計數據圖表 -->
+<canvas id="status-chart" data-online="{{ stats['online'] }}" data-offline="{{ stats['offline'] }}"></canvas>
+
+<!-- 表格 -->
+<table id="ups-table" class="display">
+    
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Date</th>
+            <th>Time</th>
+            <th>Upload Time</th>
+            <th>UP Squared Service</th>
+            <th>RGB Status</th>
+            <th>Thermal Status</th>
+            <th>Error Code</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for item in data %}
+        <tr>
+            <td>{{ item.id }}</td>
+            <td>{{ item.date }}</td>
+            <td>{{ item.time }}</td>
+            <td>{{ item.upload_time }}</td>
+            <td>
+                <span class="status {{ 'online' if item.up_squared_service == 'Online' else 'offline' }}">
+                    {{ item.up_squared_service }}
+                </span>
+            </td>
+            <td>{{ item.rgb_status }}</td>
+            <td>{{ item.thermal_status }}</td>
+            <td>{{ item.error_code }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>

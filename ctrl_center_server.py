@@ -2,7 +2,7 @@ import os
 import pytz
 import base64
 from dateutil import parser
-from flask import Flask,Response, render_template_string, render_template, request, redirect, url_for, jsonify
+from flask import Flask, Response, render_template_string, render_template, request, redirect, url_for, jsonify
 from flask_sqlalchemy import SQLAlchemy
 import json
 import cv2
@@ -324,6 +324,86 @@ def drone_data():
 @app.route("/drone_content")
 def drone_content():
     return render_template("drone.html")
+
+
+
+    
+@app.route("/ups_data", methods=["GET"])
+def ups_data():
+    try:
+        # 接收查詢參數
+        filter_status = request.args.get('status')
+
+        # 查詢最近 20 筆資料，按 upload_time 排序
+        query = UpSquared_Status.query.order_by(UpSquared_Status.upload_time.desc())
+
+        # 根據篩選條件過濾
+        if filter_status == "online":
+            query = query.filter(UpSquared_Status.up_squared_service.is_(True))
+        elif filter_status == "offline":
+            query = query.filter(UpSquared_Status.up_squared_service.is_(False))
+        
+        recent_statuses = query.limit(20).all()
+
+        # 整理數據為前端可用格式
+        data = [
+            {
+                "id": status.id,
+                "date": status.date.strftime("%Y-%m-%d") if status.date else "N/A",
+                "time": status.time.strftime("%H:%M:%S") if status.time else "N/A",
+                "upload_time": status.upload_time.strftime("%Y-%m-%d %H:%M:%S"),
+                "up_squared_service": "Online" if status.up_squared_service else "Offline",
+                "rgb_status": "Active" if status.rgb_status else "Inactive",
+                "thermal_status": "Active" if status.thermal_status else "Inactive",
+                "error_code": status.error_code if status.error_code else "No Error",
+            }
+            for status in recent_statuses
+        ]
+
+        # 統計數據
+        online_count = sum(1 for status in recent_statuses if status.up_squared_service)
+        offline_count = len(recent_statuses) - online_count
+
+        # 傳遞數據到模板
+        return render_template("ups.html", data=data, stats={"online": online_count, "offline": offline_count})
+
+    except Exception as e:
+        print(f"Error fetching UP Squared data: {e}")
+        return jsonify({"message": "Internal server error"}), 500
+
+
+
+@app.route("/ups_content")
+def ups_content():
+
+    try:
+        # 查詢最近 20 筆 UP Squared 資料，按 upload_time 排序
+        recent_statuses = UpSquared_Status.query.order_by(UpSquared_Status.upload_time.desc()).limit(20).all()
+
+        # 整理資料為前端可用的格式
+        data = [
+            {
+                "id": status.id,
+                "date": status.date.strftime("%Y-%m-%d") if status.date else "N/A",
+                "time": status.time.strftime("%H:%M:%S") if status.time else "N/A",
+                "upload_time": status.upload_time.strftime("%Y-%m-%d %H:%M:%S"),
+                "up_squared_service": "Online" if status.up_squared_service else "Offline",
+                "rgb_status": "Active" if status.rgb_status else "Inactive",
+                "thermal_status": "Active" if status.thermal_status else "Inactive",
+                "error_code": status.error_code if status.error_code else "No Error",
+            }
+            for status in recent_statuses
+        ]
+
+
+        # 渲染模板並傳遞資料
+        return render_template("ups.html", data=data)
+
+    except Exception as e:
+        print(f"Error fetching UP Squared data: {e}")
+        return jsonify({"message": "Internal server error"}), 500
+
+
 
 
 @app.route("/")
