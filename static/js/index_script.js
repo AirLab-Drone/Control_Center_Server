@@ -42,6 +42,7 @@ function loadData(type) {
         })
         .then(data => {
             contentArea.innerHTML = data;
+            loadUpsData();
             
         })
         .catch(error => {

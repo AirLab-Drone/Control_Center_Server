@@ -1,20 +1,42 @@
-.status.online {
-    color: green;
-    font-weight: bold;
+.text-success {
+  color: green;
+  font-weight: bold;
 }
-.status.offline {
-    color: red;
-    font-weight: bold;
+
+.text-danger {
+  color: red;
+  font-weight: bold;
+}
+
+
+.pagination-btn {
+  background-color: #6c757d; /* 灰色背景 */
+  color: white; /* 按鈕文字顏色 */
+  border: none; /* 無邊框 */
+  padding: 0.5rem 1rem; /* 按鈕內距 */
+  margin: 0.2rem; /* 按鈕間距 */
+  border-radius: 0.25rem; /* 圓角 */
+  cursor: pointer;
+}
+
+.pagination-btn:hover {
+  background-color: #5a6268; /* 深灰色 hover 效果 */
+}
+
+.pagination-btn:disabled {
+  background-color: #d6d8db; /* 禁用按鈕的灰色 */
+  cursor: not-allowed; /* 禁用按鈕的指標 */
 }
 
 
-/* 
-table {
-    width: 100%;
-    margin-top: 20px;
+
+#pagination input {
+  display: inline-block;
+  width: 60px;
+  text-align: center;
+  margin-right: 5px;
 }
 
-canvas {
-    margin: 20px auto;
-    display: block;
+/* #pagination .btn {
+  min-width: 60px;
 } */
