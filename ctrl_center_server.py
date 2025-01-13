@@ -176,6 +176,7 @@ def upload_up_squared_status():
 
         try:
             database.session.add(new_status)
+            database.session.commit()
             # ------------------------- database.session.commit() ------------------------ #
             return jsonify({"message": "Status added successfully"}), 200
         except Exception as e:
@@ -332,7 +333,7 @@ def ups_data():
     try:
         # 接收分頁參數
         page = request.args.get("page", default=1, type=int)
-        per_page = request.args.get("per_page", default=20, type=int)
+        per_page = request.args.get("per_page", default=15, type=int)
 
         # 查詢總數據量
         total_count = UpSquared_Status.query.count()

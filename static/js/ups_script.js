@@ -3,7 +3,7 @@ const perPage = 20; // 每頁顯示的資料筆數
 
 // 加載 UP Squared 數據
 function loadUpsData(page = 1) {
-    fetch(`/ups_data?page=${page}&per_page=20`)
+    fetch(`/ups_data?page=${page}&per_page=15`)
         .then(response => response.json())
         .then(data => {
             const tableBody = document.querySelector('#ups-data-table tbody');
