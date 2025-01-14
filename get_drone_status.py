@@ -23,7 +23,7 @@ import pytz
 
 class MAVLinkHandler:
 
-    def __init__(self, port='/dev/ttyUSB0', baud=57600):
+    def __init__(self, port='/dev/drone_usb', baud=57600):
         """
         初始化並建立與飛控的連接。
         :param port: 串口名稱
@@ -154,7 +154,7 @@ class MAVLinkHandler:
 
 if __name__ == "__main__":
     try:
-        mavlink_handler = MAVLinkHandler(port='/dev/ttyUSB0', baud=57600)
+        mavlink_handler = MAVLinkHandler(port='/dev/drone_usb', baud=57600)
         while True:
             # mavlink_handler._MAVLinkHandler__debug_function('BATTERY_STATUS')
             mavlink_handler.send_to_server(mavlink_handler.get_drone_status())

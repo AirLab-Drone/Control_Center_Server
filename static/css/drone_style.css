@@ -109,3 +109,60 @@
     color: #d9534f; /* 紅色 */
     word-wrap: break-word; /* 自動換行 */
 }
+
+
+.error-code-header {
+    grid-column: span 1; /* 在網格中占用兩列 */
+    font-weight: bold;
+    color: #d9534f; /* 紅色 */
+    word-wrap: break-word; /* 自動換行 */ 
+}
+
+
+
+/* Tooltip Custom Styles */
+.tooltip {
+    font-size: 0.85rem;
+    background-color: rgba(50, 50, 50, 0.9);
+    color: #ffffff;
+    /* padding: 10px; */
+    border-radius: 5px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+    line-height: 1.5;
+    max-width: 600px;
+}
+
+.tooltip-inner {
+    text-align: left;
+    font-size: 0.8rem;
+    white-space: pre-wrap;
+    color: #f8f9fa;
+}
+
+.tooltip.bs-tooltip-top .tooltip-arrow,
+.tooltip.bs-tooltip-auto[data-popper-placement^="top"] .tooltip-arrow {
+    border-top-color: rgba(50, 50, 50, 0.9);
+}
+
+.tooltip.bs-tooltip-bottom .tooltip-arrow,
+.tooltip.bs-tooltip-auto[data-popper-placement^="bottom"] .tooltip-arrow {
+    border-bottom-color: rgba(50, 50, 50, 0.9);
+}
+
+.tooltip .tooltip-inner {
+    text-align: left !important;
+    white-space: pre-wrap !important;
+    padding: 5px !important;
+    max-width: 600px !important;
+    background-color: rgba(77, 77, 80, 0.16) !important;
+    color: #ffffff !important;
+    font-size: medium !important;
+
+
+}
+.tooltip .tooltip-inner .tooltiptile {
+    color: #ffffff !important;
+    font-size:larger !important;
+    font-size: 1rem;
+    font-weight: bold;
+}
