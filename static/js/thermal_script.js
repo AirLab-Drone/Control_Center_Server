@@ -48,9 +48,11 @@ function startThermalUpdates() {
 
 // 停止所有的更新定時器
 function stopThermalUpdates() {
-
     if (cameraStatusInterval) {
         clearInterval(cameraStatusInterval);
         cameraStatusInterval = null;
     }
 }
+
+
+

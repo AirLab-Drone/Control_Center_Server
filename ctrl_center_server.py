@@ -79,6 +79,7 @@ class Stream_Temp_Manager:
             return self.ds4025ft_img
 
 
+
 stream_temp_manager = Stream_Temp_Manager()
 
 
@@ -219,6 +220,7 @@ def upload_thermal_camera_status():
 # 即時串流: 溫度, 影像
 @app.route("/upload/ThermalCameraStream/<source>", methods=["POST"])
 def upload_thermal_camera_stream(source):
+
     if source not in source_paths:
         return jsonify({"message": "Invalid or missing source"}), 400
 
@@ -266,7 +268,7 @@ def generate_frames(source):
                 yield (
                     b"--frame\r\n" b"Content-Type: image/jpeg\r\n\r\n" + frame + b"\r\n"
                 )
-            time.sleep(0.1)  # 控制幀率，避免 CPU 過載
+            # time.sleep(0.1)  # 控制幀率，避免 CPU 過載
         except Exception as e:
             print(f"Error generating frame for {source}: {e}")
 

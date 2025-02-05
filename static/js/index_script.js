@@ -2,6 +2,7 @@
 function loadData(type) {
     const contentArea = document.getElementById('content-area');
     if (type === "Thermal") {
+        
         fetch('/thermal_content')
             .then(response => response.text())
             .then(data => {
@@ -13,6 +14,7 @@ function loadData(type) {
             });
         startThermalUpdates(); // 啟動溫度更新
     } else if (type === "Drone") {
+
         stopThermalUpdates();
 
         fetch('/drone_content')
